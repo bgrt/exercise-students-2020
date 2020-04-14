@@ -34,10 +34,13 @@ except ImportError:
 import builtins
 
 def map(line):
-    pass
+    try:
+        emit('error' if int(line.split()[-2])>=400 else 'ok','1')
+    except:
+        pass
     
 def reduce(key, values):
-    pass
+    emit(key, str(sum([int(v) for v in values])))
 
 # Common library code follows:
 
