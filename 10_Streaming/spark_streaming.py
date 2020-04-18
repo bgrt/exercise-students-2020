@@ -58,7 +58,7 @@ print("PySpark initiated...")
 lines = spark \
         .readStream \
         .format("text") \
-        .load(path="/opt/data/nasa/")
+        .load(path="streaming_src/")
 
 lines.printSchema()
 
