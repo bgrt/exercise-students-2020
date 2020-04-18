@@ -29,6 +29,7 @@ from pyspark.ml.clustering import KMeans
 from pyspark.ml.evaluation import ClusteringEvaluator
 from pyspark.ml import Pipeline
 from pyspark.sql import functions as F
+from pyspark.sql.functions import split, slice
 
 #######################################################################################
 # CONFIGURATIONS
@@ -60,23 +61,18 @@ lines = spark \
         .load(path="/opt/data/nasa/")
 
 lines.printSchema()
-print(type(lines))
 
 words = lines \
     .filter(lines['value'].contains('- -')) \
-    .select(
-    explode(
-        split(lines.value, ' ')
-    ).alias('word')
-)
+    .withColumn("split", slice(split(lines['value'], " "), -2,1).getItem(0))
 
-wordCounts = words.groupBy('word').count()
+wordCounts = words.groupBy('split').count()
 
 # Start running the query that prints the running counts to the console
 query = wordCounts \
     .writeStream \
     .outputMode('complete') \
-    .format('console')\
+   .format('console')\
     .start()
 
 query.awaitTermination()
