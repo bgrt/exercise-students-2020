@@ -53,3 +53,26 @@ except NameError as e:
 
 print("PySpark initiated...") 
 
+
+lines = spark \
+        .readStream \
+        .format("text") \
+        .load(path="/opt/data/nasa/")
+
+
+words = lines.select(
+    explode(
+        split(lines.value, ' ')
+    ).alias('word')
+)
+
+wordCounts = words.groupBy('word').count()
+
+# Start running the query that prints the running counts to the console
+query = wordCounts \
+    .writeStream \
+    .outputMode('complete') \
+    .format('console')\
+    .start()
+
+query.awaitTermination()
