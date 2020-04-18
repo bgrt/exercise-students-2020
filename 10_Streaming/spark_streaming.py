@@ -59,6 +59,7 @@ lines = spark \
         .format("text") \
         .load(path="/opt/data/nasa/")
 
+lines.printSchema()
 
 words = lines.select(
     explode(
