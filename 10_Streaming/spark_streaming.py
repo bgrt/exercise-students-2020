@@ -60,8 +60,11 @@ lines = spark \
         .load(path="/opt/data/nasa/")
 
 lines.printSchema()
+print(type(lines))
 
-words = lines.select(
+words = lines \
+    .filter(lines['value'].contains('- -')) \
+    .select(
     explode(
         split(lines.value, ' ')
     ).alias('word')
@@ -77,3 +80,4 @@ query = wordCounts \
     .start()
 
 query.awaitTermination()
+query.stop()
